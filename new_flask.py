@@ -10,21 +10,22 @@ app = Flask(__name__)
 site = Blueprint('Site', __name__, template_folder='templates')
 
 # Load the LabelEncoder object
-with open('Crop Prediction\models\LabelEncoder.pkl', 'rb') as f:
+with open('Crop Prediction\\models\\LabelEncoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
 
 
 # Load the trained model
-with open('Crop Prediction\models\Random_model.pkl', 'rb') as f:
+with open('Crop Prediction\\models\\Random_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 #Load the SelectFromModel object
-with open('Crop Prediction\models\Selector.pkl', 'rb') as f:
+with open('Crop Prediction\\models\\Selector.pkl', 'rb') as f:
     selector = pickle.load(f)
 
 # Render the HTML form
 @app.route('/')
+
 def home():
     return render_template('index.html')
 
@@ -43,7 +44,7 @@ def predict():
     temperature = float(request.form.get('Temperature'))
 
     # Load the LabelEncoder object
-    with open('Crop Prediction\models\LabelEncoder.pkl', 'rb') as f:
+    with open('Crop Prediction\\models\\LabelEncoder.pkl', 'rb') as f:
         label_encoder = pickle.load(f)
 
     # Update the LabelEncoder with the new label
