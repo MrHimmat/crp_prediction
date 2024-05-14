@@ -6,7 +6,7 @@ import pickle
 app = Flask(__name__)
 site = Blueprint('Site', __name__, template_folder='templates')
 # Load the trained model
-with open('models\Random_model.pkl', 'rb') as f:
+with open('Crop Prediction\\models\\Random_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # Render the HTML form
