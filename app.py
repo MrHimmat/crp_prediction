@@ -1,31 +1,30 @@
 from flask import Flask, request, jsonify, render_template, Blueprint
+import os
 import pandas as pd
 import numpy as np
 import pickle
 from sklearn.feature_selection import SelectFromModel
 
-
-
 app = Flask(__name__)
 site = Blueprint('Site', __name__, template_folder='templates')
 
+# Define the directory where your models are stored
+MODELS_DIR = 'Crop Prediction\\models'
+
 # Load the LabelEncoder object
-with open('Crop Prediction\\models\\LabelEncoder.pkl', 'rb') as f:
+with open(os.path.join(MODELS_DIR, 'LabelEncoder.pkl'), 'rb') as f:
     label_encoder = pickle.load(f)
 
-
-
 # Load the trained model
-with open('Crop Prediction\\models\\Random_model.pkl', 'rb') as f:
+with open(os.path.join(MODELS_DIR, 'Random_model.pkl'), 'rb') as f:
     model = pickle.load(f)
 
-#Load the SelectFromModel object
-with open('Crop Prediction\\models\\Selector.pkl', 'rb') as f:
+# Load the SelectFromModel object
+with open(os.path.join(MODELS_DIR, 'Selector.pkl'), 'rb') as f:
     selector = pickle.load(f)
 
 # Render the HTML form
 @app.route('/')
-
 def home():
     return render_template('index.html')
 
@@ -42,10 +41,6 @@ def predict():
     ph = float(request.form.get('pH'))
     rainfall = float(request.form.get('Rainfall'))
     temperature = float(request.form.get('Temperature'))
-
-    # Load the LabelEncoder object
-    with open('Crop Prediction\\models\\LabelEncoder.pkl', 'rb') as f:
-        label_encoder = pickle.load(f)
 
     # Update the LabelEncoder with the new label
     label_encoder['District_Name'].fit([district_name])
@@ -77,13 +72,8 @@ def predict():
     # Concatenate the categorical and numerical data
     input_data_combined = pd.concat([input_data_cat_col, input_data_numerical], axis=1)
 
-
     # Perform feature selection
     selected_features = selector.transform(input_data_combined)
-
-    #det label
-    # Make predictions using the selected features
-    prediction_labels = model.predict(selected_features)
 
     # Make predictions using the selected features
     prediction_probs = model.predict_proba(selected_features)[0]
@@ -101,14 +91,6 @@ def predict():
 
     # Return the top 3 crop names and their percentages
     return jsonify(prediction=prediction_list)
-
-    # Make predictions using the selected features
-    #prediction = model.predict(selected_features)
-    # Make predictions
-    #prediction = model.predict(input_data_combined)
-    # Return the prediction
-    #return jsonify(prediction=prediction.tolist())
-
 
 if __name__ == '__main__':
     app.run(debug=True)
